@@ -19,9 +19,7 @@ data:
   val_maps: '/data0/chentao/data/LplusSNet/data/20coil/csm_cine_multicoil_test.npy' # a demo
   # mask_root: '/data0/huayu/Aluochen/Mypaper5/e_192x18_acs4_R4.mat' # a demo
   # R=8 8倍欠采样
-  # mask_root: '/data0/zhiyong/code/github/itzzy_git/k-gin_kv/masks/VISTA/e_192x18_acs4_acs_lines4_R8.mat'
-  # R=6 6倍欠采样
-  mask_root: '/data0/zhiyong/code/github/itzzy_git/k-gin_kv/masks/VISTA/e_192x18_acs4_acs_lines4_R6.mat'
+  mask_root: '/data0/zhiyong/code/github/itzzy_git/k-gin_kv/masks/VISTA/e_192x18_acs4_acs_lines4_R8.mat'
   data_root: '/data0/chentao/data/LplusSNet/data/20coil/'
   mask_pattern: VISTA
   acc_rate: *acc_rate
@@ -30,15 +28,18 @@ data:
   only_infer: *only_infer
 
 training:
-  num_epochs: &epochs 300
+  # num_epochs: &epochs 300
   # num_epochs: &epochs 2
+  num_epochs: &epochs 300
   # warmup_epoch: 1
   warmup_epoch: 30
   batch_size: 1
-  # num_workers: 4
-  num_workers: 2
-  restore_ckpt: False
-  restore_training: False
+  # num_workers: 2
+  # /data0/zhiyong/code/github/itzzy_git/k-gin_kv/experiments/test
+  num_workers: 1
+  restore_ckpt: '/data0/zhiyong/code/github/itzzy_git/k-gin_kv/experiments/test_zzy'
+  restore_training: True
+  # restore_training: True
   use_mixed_precision: True  # differ # for complexCNN this must be set False
   optim_weight_decay: 0.05
   
