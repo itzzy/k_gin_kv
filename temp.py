@@ -1,5 +1,5 @@
 import numpy as np
-import cv2
+# import cv2
 import os
 import sys
 import torch
@@ -66,7 +66,9 @@ from scipy.io import loadmat
 
 # data = np.load('/data0/huayu/Aluochen/Mypaper5/k-gin_kv/out.npy')
 # data = np.load('/data0/zhiyong/code/github/k-gin/out_1122.npy')
-data =np.load('/data0/zhiyong/code/github/itzzy_git/k-gin_kv/out_1130_2.npy')
+# data =np.load('/data0/zhiyong/code/github/itzzy_git/k-gin_kv/out_1130_2.npy')
+# data = np.load('/nfs/zzy/code/k_gin_kv/output/r4/out_1220_r4.npy')
+data = np.load('/nfs/zzy/code/k_gin_base/output/r4/out_1220_r4.npy')
 #csm = np.load('/data0/chentao/data/LplusSNet/data/20coil/csm_cine_multicoil_test.npy')
 print("data:", data.shape) #data: (800, coil=20, 18, 192, 192) (t,h,w)=(18, 192, 192)
 data = data[100:101,:,:,:]
@@ -93,7 +95,12 @@ anim = FuncAnimation(plt.figure(), animate, frames=len(img_brightened), interval
 # anim.save('output_kv_kgin_1122.gif', writer='imagemagick')
 
 # /data0/zhiyong/code/github/itzzy_git/k-gin_kv/out_1130.npy
-anim.save('output_kv_kgin_1130_2_1.gif', writer='imagemagick')
+# anim.save('output_kv_kgin_1130_2_1.gif', writer='imagemagick')
+# /nfs/zzy/code/k_gin_kv/output/r4/out_1220_r4.npy
+# anim.save('output_kv_kgin_1220_r4.gif', writer='imagemagick')
+# /nfs/zzy/code/k_gin_base/output/r4/out_1220_r4.npy
+anim.save('output_kgin_base_1220_r4.gif', writer='imagemagick')
+
 
 
 
