@@ -36,7 +36,8 @@ def load_mat(fn_im_path):
 # data = np.load('/data0/zhiyong/code/github/itzzy_git/k-gin_kv/out_1201_1.npy')
 # /data0/zhiyong/code/github/itzzy_git/k-gin_kv/out_1205_test_1.npy
 # data = np.load('/data0/zhiyong/code/github/itzzy_git/k-gin_kv/out_1205_1.npy')
-data = np.load('/data0/zhiyong/code/github/itzzy_git/k-gin_kv/out_1205_test_1.npy')
+# data = np.load('/data0/zhiyong/code/github/itzzy_git/k-gin_kv/out_1205_test_1.npy')
+data = np.load('/nfs/zzy/code/k_gin_kv/output/r4/out_1220_r4.npy')
 # data = np.load('/data0/zhiyong/code/github/k-gin/out_1201.npy')
 #以下不对
 # data = np.load('/data0/zhiyong/code/github/k-gin/out_1130.npy')
@@ -72,7 +73,9 @@ anim = FuncAnimation(plt.figure(), animate, frames=len(img_brightened), interval
 # anim.save('output_k-gin_kv_1205_1.gif', writer='imagemagick')
 
 # /data0/zhiyong/code/github/itzzy_git/k-gin_kv/out_1205_test_1.npy
-anim.save('output_k-gin_kv_1205_test_1.gif', writer='imagemagick')
+# anim.save('output_k-gin_kv_1205_test_1.gif', writer='imagemagick')
+# data = np.load('/nfs/zzy/code/k_gin_kv/output/r4/out_1220_r4.npy')
+anim.save('output_k-gin_kv_1220_r4.gif', writer='imagemagick')
 
 
 # /data0/zhiyong/code/github/k-gin/out_1201.npy
