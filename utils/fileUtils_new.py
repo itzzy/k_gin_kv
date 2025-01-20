@@ -26,9 +26,60 @@ def load_mat(fn_im_path):
         try:
             f = h5py.File(fn_im_path, 'r')
         except IOError:
-            # print("File {} is defective and cannot be read!".format(fn_im_path))
             raise IOError("File {} is defective and cannot be read!".format(fn_im_path))
     return f
+
+# 加载数据
+
+# data = np.load('/nfs/zzy/code/k_gin_kv/output/r4/out_1220_r4.npy') #r4
+# data = np.load('/nfs/zzy/code/k_gin_kv/output/r6/out_1205_r6_1.npy') # r6
+data = np.load('/nfs/zzy/code/k_gin_kv/output/r8/out_1205_2_r8.npy') #r8
+print("data:", data.shape)  # data: (800, coil=20, 18, 192, 192) (t,h,w)=(18, 192, 192)
+
+# 只取第一帧数据
+data = data[0:1, :, :, :]
+
+# 对数据进行逆傅里叶变换
+img = IFFT2c(data)
+img = img[0]  # 取第一个样本
+print("img:", img.shape)  # img: (18, 192, 192)
+
+# 归一化并调整亮度
+img_max = np.max(np.abs(img))
+img_norm = np.abs(img) / img_max
+brightness_factor = 3
+img_brightened = np.clip(img_norm * brightness_factor, 0, 1)
+
+# # 创建 r4 目录
+# output_dir = 'r4'
+# # 创建 r6 目录
+# output_dir = 'r6'
+# 创建 r6 目录
+output_dir = 'r8'
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
+
+# 保存前五张图片
+for i in range(5):
+    plt.imshow(img_brightened[i], cmap='gray')
+    plt.title(f'Frame {i}')
+    plt.axis('off')
+    plt.savefig(os.path.join(output_dir, f'frame_{i}.png'))  # 保存为 PNG 文件
+    plt.close()  # 关闭当前图像，避免重叠
+
+print(f"前五张图片已保存到 {output_dir} 目录下。")
+
+
+# def load_mat(fn_im_path):
+#     try:
+#         f = sio.loadmat(fn_im_path)
+#     except Exception:
+#         try:
+#             f = h5py.File(fn_im_path, 'r')
+#         except IOError:
+#             # print("File {} is defective and cannot be read!".format(fn_im_path))
+#             raise IOError("File {} is defective and cannot be read!".format(fn_im_path))
+#     return f
 
 # data = np.load('/data0/huayu/Aluochen/Mypaper5/k-gin_kv/out.npy')
 # /data0/zhiyong/code/github/itzzy_git/k-gin_kv/out_1201_1.npy
@@ -37,46 +88,46 @@ def load_mat(fn_im_path):
 # /data0/zhiyong/code/github/itzzy_git/k-gin_kv/out_1205_test_1.npy
 # data = np.load('/data0/zhiyong/code/github/itzzy_git/k-gin_kv/out_1205_1.npy')
 # data = np.load('/data0/zhiyong/code/github/itzzy_git/k-gin_kv/out_1205_test_1.npy')
-data = np.load('/nfs/zzy/code/k_gin_kv/output/r4/out_1220_r4.npy')
-# data = np.load('/data0/zhiyong/code/github/k-gin/out_1201.npy')
-#以下不对
-# data = np.load('/data0/zhiyong/code/github/k-gin/out_1130.npy')
-#csm = np.load('/data0/chentao/data/LplusSNet/data/20coil/csm_cine_multicoil_test.npy')
-# data: (118, 18, 192, 192)
-# img: (18, 192, 192)
-print("data:", data.shape) #data: (800, coil=20, 18, 192, 192) (t,h,w)=(18, 192, 192)
-# data = data[100:101,:,:,:]
-data = data[0:1,:,:,:]
-#csm = csm[100,:,:,:,:] 
-#img = np.sum(IFFT2c(data) * np.conj(csm), axis=0) #
-img = IFFT2c(data)
-img = img[0]
-print("img:", img.shape)
-
-img_max = np.max(np.abs(img))
-img_norm = np.abs(img) / img_max
-brightness_factor = 3
-img_brightened = np.clip(img_norm * brightness_factor, 0, 1)
-
-def animate(frame):
-   plt.imshow(img_brightened[frame], cmap='gray')  
-   plt.title('Frame {}'.format(frame))
-   plt.axis('off')
-
-anim = FuncAnimation(plt.figure(), animate, frames=len(img_brightened), interval=500)
-# anim.save('output_kv_1120_2.gif', writer='imagemagick')
-# anim.save('output_kgin_1130.gif', writer='imagemagick')
-# k-gin_kv
-# anim.save('output_k-gin_kv_1130_3.gif', writer='imagemagick')
-
-# /data0/zhiyong/code/github/itzzy_git/k-gin_kv/out_1201_1.npy
-# /data0/zhiyong/code/github/itzzy_git/k-gin_kv/out_1205_1.npy
-# anim.save('output_k-gin_kv_1205_1.gif', writer='imagemagick')
-
-# /data0/zhiyong/code/github/itzzy_git/k-gin_kv/out_1205_test_1.npy
-# anim.save('output_k-gin_kv_1205_test_1.gif', writer='imagemagick')
 # data = np.load('/nfs/zzy/code/k_gin_kv/output/r4/out_1220_r4.npy')
-anim.save('output_k-gin_kv_1220_r4.gif', writer='imagemagick')
+# # data = np.load('/data0/zhiyong/code/github/k-gin/out_1201.npy')
+# #以下不对
+# # data = np.load('/data0/zhiyong/code/github/k-gin/out_1130.npy')
+# #csm = np.load('/data0/chentao/data/LplusSNet/data/20coil/csm_cine_multicoil_test.npy')
+# # data: (118, 18, 192, 192)
+# # img: (18, 192, 192)
+# print("data:", data.shape) #data: (800, coil=20, 18, 192, 192) (t,h,w)=(18, 192, 192)
+# # data = data[100:101,:,:,:]
+# data = data[0:1,:,:,:]
+# #csm = csm[100,:,:,:,:] 
+# #img = np.sum(IFFT2c(data) * np.conj(csm), axis=0) #
+# img = IFFT2c(data)
+# img = img[0]
+# print("img:", img.shape)
+
+# img_max = np.max(np.abs(img))
+# img_norm = np.abs(img) / img_max
+# brightness_factor = 3
+# img_brightened = np.clip(img_norm * brightness_factor, 0, 1)
+
+# def animate(frame):
+#    plt.imshow(img_brightened[frame], cmap='gray')  
+#    plt.title('Frame {}'.format(frame))
+#    plt.axis('off')
+
+# anim = FuncAnimation(plt.figure(), animate, frames=len(img_brightened), interval=500)
+# # anim.save('output_kv_1120_2.gif', writer='imagemagick')
+# # anim.save('output_kgin_1130.gif', writer='imagemagick')
+# # k-gin_kv
+# # anim.save('output_k-gin_kv_1130_3.gif', writer='imagemagick')
+
+# # /data0/zhiyong/code/github/itzzy_git/k-gin_kv/out_1201_1.npy
+# # /data0/zhiyong/code/github/itzzy_git/k-gin_kv/out_1205_1.npy
+# # anim.save('output_k-gin_kv_1205_1.gif', writer='imagemagick')
+
+# # /data0/zhiyong/code/github/itzzy_git/k-gin_kv/out_1205_test_1.npy
+# # anim.save('output_k-gin_kv_1205_test_1.gif', writer='imagemagick')
+# # data = np.load('/nfs/zzy/code/k_gin_kv/output/r4/out_1220_r4.npy')
+# anim.save('output_k-gin_kv_1220_r4.gif', writer='imagemagick')
 
 
 # /data0/zhiyong/code/github/k-gin/out_1201.npy
