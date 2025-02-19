@@ -26,5 +26,5 @@ wandb offline
 
 #/nfs/zzy/code/k_gin_kv/kgin_kv_train_r10.py
 #/nfs/zzy/code/k_gin_kv/config_kgin_kv_r10.yaml
-# code/k_gin_kv/kgin_kv_train_vista_r8.py
-python kgin_kv_train_vista_r8.py --config config_kgin_kv_r10.yaml
+# code/k_gin_kv/kgin_kv_train_vista_r8.py code/k_gin_kv/config_kgin_kv_vista_r8.yaml
+python kgin_kv_train_vista_r8.py --config config_kgin_kv_vista_r8.yaml
