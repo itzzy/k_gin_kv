@@ -347,24 +347,24 @@ class KInterpolator(nn.Module):
         # img_keep shape: torch.Size([32, 1, 192, 192])
         # weights shape: torch.Size([32, 1, 192])
         # forward-img_0F-1 shape: torch.Size([32, 1, 192, 192])
-        print(f"forward-img type: {type(img)}, shape: {img.shape}")
-        print(f"forward-mask type: {type(mask)}, shape: {mask.shape}")
+        # print(f"forward-img type: {type(img)}, shape: {img.shape}")
+        # print(f"forward-mask type: {type(mask)}, shape: {mask.shape}")
         # img_0F = img.sum(dim=1, keepdim=True) / mask.sum(dim=1, keepdim=True)
         # 不同帧的K空间合并成一个了,作为全采指导
         # 计算参考图像
         img_keep = img.sum(dim=1, keepdim=True)  # 计算参考图像
-        print(f"img_keep shape: {img_keep.shape}")  # 应该是 [32, 1, 192, 192]
+        # print(f"img_keep shape: {img_keep.shape}")  # 应该是 [32, 1, 192, 192]
         # 计算权重
         weights = mask.sum(dim=1, keepdim=True)  # 计算权重
-        print(f"weights shape: {weights.shape}")  # 应该是 [32, 1, 192]
+        # print(f"weights shape: {weights.shape}")  # 应该是 [32, 1, 192]
         # 进行除法运算  加了unsqueeze运行时成功的
         # img_0F_1 = img_keep / weights  # 计算参考图像
         img_0F_1 = img_keep / weights.unsqueeze(1)  # 确保 weights 的维度是 [32, 1, 192, 1]
-        print(f"forward-img_0F-1 shape: {img_0F_1.shape}")  # 应该是 [32, 1, 192, 192]
+        # print(f"forward-img_0F-1 shape: {img_0F_1.shape}")  # 应该是 [32, 1, 192, 192]
 
         # print(f"forward-img_0F-1 type: {type(img_0F)}, shape: {img_0F.shape}")
         img_0F_2 = img_0F_1.repeat(1, img.shape[1], 1, 1)
-        print(f"forward-img_0F-2 type: {type(img_0F_2)}, shape: {img_0F_2.shape}")
+        # print(f"forward-img_0F-2 type: {type(img_0F_2)}, shape: {img_0F_2.shape}")
         #torch.mean(img, dim=1, keepdim=True).repeat(1, img.shape[1], 1, 1)
                 
         mask_0F = torch.ones(mask.shape[0], mask.shape[1], mask.shape[2])
