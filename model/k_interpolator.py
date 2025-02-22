@@ -212,8 +212,8 @@ class KInterpolator(nn.Module):
     def encoder(self, kspace, mask):
         # kspace shape: torch.Size([32, 384, 576, 192])
         # pos_embed shape: torch.Size([1, 3457, 512])
-        print(f"kspace shape: {kspace.shape}")
-        print(f"pos_embed shape: {self.pos_embed.shape}")
+        # print(f"kspace shape: {kspace.shape}")
+        # print(f"pos_embed shape: {self.pos_embed.shape}")
         b, c, h, w = kspace.shape
         kspace = self.patch_embed(kspace)
 
