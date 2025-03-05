@@ -1,0 +1,19 @@
+nohup: ignoring input
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+wandb: Currently logged in as: 549926988 (itzzy) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: creating run
+wandb: Tracking run with wandb version 0.19.7
+wandb: Run data is saved locally in /data0/zhiyong/code/github/itzzy_git/k-gin_kv/wandb/run-20250228_200931-w2tsgu8i
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run noble-spaceship-447
+wandb: ⭐️ View project at https://wandb.ai/itzzy/KInterpolator
+wandb: 🚀 View run at https://wandb.ai/itzzy/KInterpolator/runs/w2tsgu8i
+Using config_r6.yaml as config file
+TrainerKInterpolator initialized.
+TrainerAbstract initialized.
+Parameter Count: 134443264
+Starting run method
+Loading data
+Initializing model
+Starting training loop
+  0%|          | 0/300 [00:00<?, ?it/s]
