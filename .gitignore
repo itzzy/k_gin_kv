@@ -74,7 +74,6 @@ output_kv_*
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-
 nohup.out
 output.log
 kgin_kv_*.log
