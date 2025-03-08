@@ -25,12 +25,9 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-<<<<<<< HEAD
 wandb/
 experiments/
 dataset/__pycache__
-=======
->>>>>>> 0e45fc2dfdfb1d23c55935e8a6ea35df621c7aa7
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -61,22 +58,19 @@ cover/
 *.mo
 *.pot
 
-<<<<<<< HEAD
 out.npy
 out_*
-output_kv_*
+output_kg_*
 output*
+log_*
 # masks/
 
 
-=======
->>>>>>> 0e45fc2dfdfb1d23c55935e8a6ea35df621c7aa7
 # Django stuff:
 *.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-<<<<<<< HEAD
 nohup.out
 output.log
 kgin_kv_*.log
@@ -84,8 +78,6 @@ out*.npy
 output_k*.gif
 test*.gif
 
-=======
->>>>>>> 0e45fc2dfdfb1d23c55935e8a6ea35df621c7aa7
 
 # Flask stuff:
 instance/

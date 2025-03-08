@@ -4,9 +4,9 @@ import yaml
 import torch
 import os
 from utils import wandb_setup, dict2obj
-from trainer_vista_r8 import TrainerKInterpolator
+from trainer_vista_r8_test import TrainerKInterpolator
 
-#nohup python kgin_kv_train_vista_r8.py --config config_kgin_kv_vista_r8.yaml > log_0216_test_3.txt 2>&1 &
+#nohup python kgin_kv_train_vista_r8_test.py --config config_kgin_kv_vista_r8_test.yaml > log_0216_test_3.txt 2>&1 &
 '''
 wandb: ERROR Run initialization has timed out after 90.0 sec. 
 wandb: ERROR Please refer to the documentation for additional information: https://docs.wandb.ai/guides/track/tracking-faq#initstarterror-error-communicating-with-wandb-process-
