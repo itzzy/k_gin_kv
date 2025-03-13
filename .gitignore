@@ -64,7 +64,8 @@ output_kg_*
 output*
 log_*
 # masks/
-
+# masks/VISTA/shear*
+masks/VISTA/shear_grid_18_192_192_sample_n_4_acc_4.mat
 
 # Django stuff:
 *.log
