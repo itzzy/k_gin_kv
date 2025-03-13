@@ -16,13 +16,13 @@ from utils import multicoil2single
 import numpy as np
 import datetime
 
-#nohup python kgin_kv_train_vista_r8_test.py --config config_kgin_kv_vista_r8_test.yaml > log_0216_test_3.txt 2>&1 &
+#nohup python kgin_kv_train_shear_grid_r8.py --config config_kgin_kv_shear_grid_r8.yaml > log_0216_test_3.txt 2>&1 &
 # PyTorch建议在使用多线程时设置OMP_NUM_THREADS环境变量，以避免系统过载。
 os.environ['OMP_NUM_THREADS'] = '1'
 # 设置PYTORCH_CUDA_ALLOC_CONF环境变量，以减少CUDA内存碎片
 os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
 os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'max_split_size_mb:256'
-os.environ["CUDA_VISIBLE_DEVICES"] = "3" #,0,1,2,4,5,6,7
+# os.environ["CUDA_VISIBLE_DEVICES"] = "3" #,0,1,2,4,5,6,7
 # os.environ['CUDA_VISIBLE_DEVICES'] = '1'  # 指定使用 GPU 1 和 GPU 4
 # os.environ['CUDA_VISIBLE_DEVICES'] = '6'  # 指定使用 GPU 1 和 GPU 4
 # os.environ['CUDA_VISIBLE_DEVICES'] = '0'  # 指定使用 GPU 1 和 GPU 4
@@ -50,7 +50,7 @@ class TrainerAbstract:
         self.num_epochs = config.training.num_epochs if config.general.only_infer is False else 1
 
         # data
-        # train_ds = CINE2DT(config=config.data, mode='train')
+        train_ds = CINE2DT(config=config.data, mode='train')
         # train_ds = CINE2DT(config=config.data, mode='val')
         test_ds = CINE2DT(config=config.data, mode='val')
         # 测试数据分位训练集:测试集 = 8:2 计算训练集和测试集的大小
@@ -187,7 +187,8 @@ class TrainerKInterpolator(TrainerAbstract):
             #     f"time: {elapsed_time / (i + 1):.4f} data: 0.0002 max mem: {max_memory:.0f}"
             # )
             # Log the detailed information
-            if i % 20 ==0:
+            # if i % 20 ==0:
+            if i % 50 ==0:
                 print(
                     f"Epoch: [{epoch}] [{i + 1}/{len(self.train_loader)}] eta: {str(eta)} "
                     f"lr: {current_lr:.6f} loss: {loss_reduced.item():.4f} ({running_loss / (i + 1):.4f}) "

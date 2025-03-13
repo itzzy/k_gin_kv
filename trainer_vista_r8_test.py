@@ -54,11 +54,11 @@ class TrainerAbstract:
         # train_ds = CINE2DT(config=config.data, mode='val')
         test_ds = CINE2DT(config=config.data, mode='val')
         # 测试数据分位训练集:测试集 = 8:2 计算训练集和测试集的大小
-        # total_size = len(test_ds)
-        # train_size = int(0.8 * total_size)  # 80% 用于训练
-        # test_size = total_size - train_size  # 20% 用于测试
-        # # 使用 random_split 划分数据集
-        # train_ds, test_ds = random_split(test_ds, [train_size, test_size])
+        total_size = len(test_ds)
+        train_size = int(0.8 * total_size)  # 80% 用于训练
+        test_size = total_size - train_size  # 20% 用于测试
+        # 使用 random_split 划分数据集
+        train_ds, test_ds = random_split(test_ds, [train_size, test_size])
         self.train_loader = DataLoader(dataset=train_ds, num_workers=config.training.num_workers, drop_last=False,
                                        pin_memory=True, batch_size=config.training.batch_size, shuffle=True)
         self.test_loader = DataLoader(dataset=test_ds, num_workers=2, drop_last=False, batch_size=1, shuffle=False)
