@@ -180,7 +180,8 @@ class TrainerKInterpolator(TrainerAbstract):
             #     f"time: {elapsed_time / (i + 1):.4f} data: 0.0002 max mem: {max_memory:.0f}"
             # )
             # Log the detailed information
-            if i % 20 ==0:
+            # if i % 20 ==0:
+            if i % 50 ==0:
                 print(
                     f"Epoch: [{epoch}] [{i + 1}/{len(self.train_loader)}] eta: {str(eta)} "
                     f"lr: {current_lr:.6f} loss: {loss_reduced.item():.4f} ({running_loss / (i + 1):.4f}) "
@@ -221,6 +222,6 @@ class TrainerKInterpolator(TrainerAbstract):
             # np.save('out.npy', out)
             # np.save('out_1120.npy', out)
             # np.save('out_1130_3.npy', out)
-            np.save('out_kgin_kv_vista_r8_0219.npy', out)
+            np.save('out_kgin_kv_vista_r8_0314.npy', out)
             self.logger.update_best_eval_results(self.logger.get_metric_value('val/psnr'))
             self.logger.update_metric_item('train/lr', self.optimizer.param_groups[0]['lr'])
