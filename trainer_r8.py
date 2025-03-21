@@ -39,7 +39,7 @@ class TrainerAbstract:
         super().__init__()
         self.config = config.general
         self.debug = config.general.debug
-        if self.debug: config.general.exp_name = 'test_kgin_kv_r10'
+        if self.debug: config.general.exp_name = 'test_kgin_kv_r8'
         self.experiment_dir = os.path.join(config.general.exp_save_root, config.general.exp_name)
         pathlib.Path(self.experiment_dir).mkdir(parents=True, exist_ok=True)
 
@@ -179,7 +179,7 @@ class TrainerKInterpolator(TrainerAbstract):
             #     f"time: {elapsed_time / (i + 1):.4f} data: 0.0002 max mem: {max_memory:.0f}"
             # )
             # Log the detailed information
-            if i % 20 ==0:
+            if i % 50 ==0:
                 print(
                     f"Epoch: [{epoch}] [{i + 1}/{len(self.train_loader)}] eta: {str(eta)} "
                     f"lr: {current_lr:.6f} loss: {loss_reduced.item():.4f} ({running_loss / (i + 1):.4f}) "
@@ -193,6 +193,7 @@ class TrainerKInterpolator(TrainerAbstract):
     def run_test(self):
         out = torch.complex(torch.zeros([118, 18, 192, 192]), torch.zeros([118, 18, 192, 192])).to(device)
         self.network.eval()
+        psnr_values = []  # 新增：用于收集所有PSNR值的列表
         with torch.no_grad():
             for i, (kspace, coilmaps, sampling_mask) in enumerate(self.test_loader):
                 kspace,coilmaps,sampling_mask = kspace.to(device), coilmaps.to(device), sampling_mask.to(device)
@@ -211,15 +212,22 @@ class TrainerKInterpolator(TrainerAbstract):
                 out[i] = kspace_complex
 
                 ls = self.eval_criterion([kspace_complex], ref_kspace, im_recon, ref_img, kspace_mask=sampling_mask, mode='test')
-
+                #收集每个样本的PSNR值
+                psnr_values.append(ls['psnr'].item())  # 修改：记录原始PSNR值
                 self.logger.update_metric_item('val/k_recon_loss', ls['k_recon_loss'].item()/len(self.test_loader))
                 self.logger.update_metric_item('val/recon_loss', ls['photometric'].item()/len(self.test_loader))
                 self.logger.update_metric_item('val/psnr', ls['psnr'].item()/len(self.test_loader))
+            #计算统计量 均值和方差
+            psnr_mean = np.mean(psnr_values)
+            psnr_var = np.var(psnr_values)
+            # 打印结果
+            print(f'\nkgin_kv_r8 Validation PSNR - Mean: {psnr_mean:.4f} ± {np.sqrt(psnr_var):.4f} | Variance: {psnr_var:.4f}')
+            
             print('...', out.shape, out.dtype)
             out = out.cpu().data.numpy()
             # np.save('out.npy', out)
             # np.save('out_1120.npy', out)
             # np.save('out_1130_3.npy', out)
-            np.save('out_kgin_kv_0118_r10.npy', out)
+            np.save('out_kgin_kv_0321_r8.npy', out)
             self.logger.update_best_eval_results(self.logger.get_metric_value('val/psnr'))
             self.logger.update_metric_item('train/lr', self.optimizer.param_groups[0]['lr'])
