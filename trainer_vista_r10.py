@@ -40,7 +40,7 @@ class TrainerAbstract:
         super().__init__()
         self.config = config.general
         self.debug = config.general.debug
-        if self.debug: config.general.exp_name = 'test_kgin_kv_vista_r8'
+        if self.debug: config.general.exp_name = 'test_kgin_kv_vista_r10'
         self.experiment_dir = os.path.join(config.general.exp_save_root, config.general.exp_name)
         pathlib.Path(self.experiment_dir).mkdir(parents=True, exist_ok=True)
 
@@ -204,10 +204,10 @@ class TrainerKInterpolator(TrainerAbstract):
             psnr_mean = np.mean(psnr_values)
             psnr_var = np.var(psnr_values)
             # 打印结果
-            print(f'\nkgin_kv_vista_r8:Validation PSNR - Mean: {psnr_mean:.4f} ± {np.sqrt(psnr_var):.4f} | Variance: {psnr_var:.4f}')
+            print(f'\nkgin_kv_vista_r10:Validation PSNR - Mean: {psnr_mean:.4f} ± {np.sqrt(psnr_var):.4f} | Variance: {psnr_var:.4f}')
 
             print('...', out.shape, out.dtype)
             out = out.cpu().data.numpy()
-            np.save('out_kgin_kv_vista_r8_0314.npy', out)
+            np.save('out_kgin_kv_vista_r10_0327.npy', out)
             self.logger.update_best_eval_results(self.logger.get_metric_value('val/psnr'))
             self.logger.update_metric_item('train/lr', self.optimizer.param_groups[0]['lr'])
