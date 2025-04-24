@@ -210,7 +210,7 @@ class TrainerKInterpolator(TrainerAbstract):
                 sampling_mask = sampling_mask.repeat_interleave(kspace.shape[2], 2)
                 
                 out[i] = kspace_complex
-
+                #ls = self.train_criterion(k_recon_2ch, torch.view_as_real(ref_kspace), im_recon, ref_img, kspace_mask=sampling_mask)
                 ls = self.eval_criterion([kspace_complex], ref_kspace, im_recon, ref_img, kspace_mask=sampling_mask, mode='test')
                 #收集每个样本的PSNR值
                 psnr_values.append(ls['psnr'].item())  # 修改：记录原始PSNR值
@@ -228,6 +228,6 @@ class TrainerKInterpolator(TrainerAbstract):
             # np.save('out.npy', out)
             # np.save('out_1120.npy', out)
             # np.save('out_1130_3.npy', out)
-            np.save('out_kgin_kv_0324_r8.npy', out)
+            np.save('out_kgin_kv_0424_r8.npy', out)
             self.logger.update_best_eval_results(self.logger.get_metric_value('val/psnr'))
             self.logger.update_metric_item('train/lr', self.optimizer.param_groups[0]['lr'])
