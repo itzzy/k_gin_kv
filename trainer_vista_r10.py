@@ -6,6 +6,7 @@ import glob
 import tqdm
 import time
 from torch.utils.data import DataLoader
+from torch.utils.data import random_split
 # from dataset.dataloader import CINE2DT
 from dataset.dataloader import CINE2DT_vista as CINE2DT
 from model.k_interpolator import KInterpolator
@@ -15,7 +16,7 @@ from utils import multicoil2single
 import numpy as np
 import datetime
 
-#nohup python kgin_kv_train_vista_r8.py --config config_kgin_kv_vista_r8.yaml > log_0216_test_3.txt 2>&1 &
+#nohup python kgin_kv_train_vista_r10.py --config config_kgin_kv_vista_r10_zzy.yaml > log_0216_test_3.txt 2>&1 &
 # PyTorch建议在使用多线程时设置OMP_NUM_THREADS环境变量，以避免系统过载。
 os.environ['OMP_NUM_THREADS'] = '1'
 # 设置PYTORCH_CUDA_ALLOC_CONF环境变量，以减少CUDA内存碎片
@@ -24,9 +25,9 @@ os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'max_split_size_mb:256'
 # os.environ["CUDA_VISIBLE_DEVICES"] = "3" #,0,1,2,4,5,6,7
 # os.environ['CUDA_VISIBLE_DEVICES'] = '1'  # 指定使用 GPU 1 和 GPU 4
 # os.environ['CUDA_VISIBLE_DEVICES'] = '7'  # 指定使用 GPU 1 和 GPU 4
-# os.environ['CUDA_VISIBLE_DEVICES'] = '2'  # 指定使用 GPU 1 和 GPU 4
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'  # 指定使用 GPU 1 和 GPU 4
 
-# 设置环境变量 CUDA_VISIBLE_DEVICES  0-5(nvidia--os) 2-6 3-7
+# 设置环境变量 CUDA_VISIBLE_DEVICES  0-1(os--nvidia) 3-6 4-7  5--0  6--2 7--3
 # os.environ['CUDA_VISIBLE_DEVICES'] = '0,1'  # 指定使用 GPU 1 和 GPU 4
 # os.environ['CUDA_VISIBLE_DEVICES'] = '4,7'  # 指定使用 GPU 7 和 GPU 3
 # os.environ['CUDA_VISIBLE_DEVICES'] = '1,4'  # 指定使用 GPU 4 和 GPU 7
@@ -40,7 +41,9 @@ class TrainerAbstract:
         super().__init__()
         self.config = config.general
         self.debug = config.general.debug
-        if self.debug: config.general.exp_name = 'test_kgin_kv_vista_r10'
+        # test_kgin_kv_vista_r10_zzy
+        # if self.debug: config.general.exp_name = 'test_kgin_kv_vista_r10' test_kgin_kv_vista_r10_zzy
+        if self.debug: config.general.exp_name = 'test_kgin_kv_vista_r10_zzy'
         self.experiment_dir = os.path.join(config.general.exp_save_root, config.general.exp_name)
         pathlib.Path(self.experiment_dir).mkdir(parents=True, exist_ok=True)
 
@@ -49,9 +52,15 @@ class TrainerAbstract:
         self.num_epochs = config.training.num_epochs if config.general.only_infer is False else 1
 
         # data
-        train_ds = CINE2DT(config=config.data, mode='train')
+        # train_ds = CINE2DT(config=config.data, mode='train')
         # train_ds = CINE2DT(config=config.data, mode='val')
         test_ds = CINE2DT(config=config.data, mode='val')
+        # 测试数据分位训练集:测试集 = 8:2 计算训练集和测试集的大小
+        total_size = len(test_ds)
+        train_size = int(0.8 * total_size)  # 80% 用于训练
+        test_size = total_size - train_size  # 20% 用于测试
+        # 使用 random_split 划分数据集
+        train_ds, test_ds = random_split(test_ds, [train_size, test_size])
         self.train_loader = DataLoader(dataset=train_ds, num_workers=config.training.num_workers, drop_last=False,
                                     pin_memory=True, batch_size=config.training.batch_size, shuffle=True)
         self.test_loader = DataLoader(dataset=test_ds, num_workers=2, drop_last=False, batch_size=1, shuffle=False)
@@ -138,6 +147,8 @@ class TrainerKInterpolator(TrainerAbstract):
             kspace,coilmaps,sampling_mask = kspace.to(device), coilmaps.to(device), sampling_mask.to(device)
             ref_kspace, ref_img = multicoil2single(kspace, coilmaps)
             # kspace = ref_kspace*torch.unsqueeze(sampling_mask, dim=2) #[1,18,1,192]
+            # print('train_one_epoch-ref_kspace-shape:',ref_kspace.shape) #torch.Size([1, 18, 192, 192])
+            # print('train_one_epoch-ref_img-shape:',ref_img.shape) #torch.Size([1, 18, 192, 192])
             kspace = ref_kspace
 
             self.optimizer.zero_grad()
@@ -161,8 +172,8 @@ class TrainerKInterpolator(TrainerAbstract):
             max_memory = torch.cuda.max_memory_allocated() / 1024 / 1024
 
             # 更新tqdm显示信息
-            # if i % 20 ==0:
-            if i % 50 ==0:
+            if i % 20 ==0:
+            # if i % 50 ==0:
                 print(
                     f"Epoch: [{epoch}] [{i + 1}/{len(self.train_loader)}] eta: {str(eta)} "
                     f"lr: {current_lr:.6f} loss: {loss_reduced.item():.4f} ({running_loss / (i + 1):.4f}) "
@@ -182,6 +193,8 @@ class TrainerKInterpolator(TrainerAbstract):
             for i, (kspace, coilmaps, sampling_mask) in enumerate(self.test_loader):
                 kspace,coilmaps,sampling_mask = kspace.to(device), coilmaps.to(device), sampling_mask.to(device)
                 ref_kspace, ref_img = multicoil2single(kspace, coilmaps)
+                # print('run_test-ref_kspace-shape:',ref_kspace.shape) #torch.Size([1, 18, 192, 192])
+                # print('run_test-ref_img-shape:',ref_img.shape) #torch.Size([1, 18, 192, 192])  
                 # kspace = ref_kspace*torch.unsqueeze(sampling_mask, dim=2)
                 kspace = ref_kspace
                 k_recon_2ch, im_recon = self.network(kspace, mask=sampling_mask) # size of kspace and mask: [B, T, H, W]
@@ -191,10 +204,15 @@ class TrainerKInterpolator(TrainerAbstract):
                 sampling_mask = sampling_mask.repeat_interleave(kspace.shape[2], 2)
                 
                 out[i] = kspace_complex
-
+                print('run_test-kspace_complex-shape:',kspace_complex.shape) #torch.Size([1, 18, 192, 192])
+                print('run_test-ref_kspace-shape:',ref_kspace.shape) #torch.Size([1, 18, 192, 192])
+                print('run_test-im_recon-shape:',im_recon.shape) #torch.Size([1, 18, 192, 192])
+                print('run_test-ref_img-shape:',ref_img.shape) #torch.Size([1, 18, 192, 192])
+                print('run_test-sampling_mask-shape:',ref_img.shape) #torch.Size([1, 18, 192, 192])
                 ls = self.eval_criterion([kspace_complex], ref_kspace, im_recon, ref_img, kspace_mask=sampling_mask, mode='test')
                 # 收集每个样本的PSNR值
                 psnr_values.append(ls['psnr'].item())  # 修改：记录原始PSNR值
+                print('run_test-psnr:',ls['psnr'].item())
                 
                 self.logger.update_metric_item('val/k_recon_loss', ls['k_recon_loss'].item()/len(self.test_loader))
                 self.logger.update_metric_item('val/recon_loss', ls['photometric'].item()/len(self.test_loader))
@@ -208,6 +226,6 @@ class TrainerKInterpolator(TrainerAbstract):
 
             print('...', out.shape, out.dtype)
             out = out.cpu().data.numpy()
-            np.save('out_kgin_kv_vista_r10_0327.npy', out)
+            np.save('out_kgin_kv_vista_r10_0409.npy', out)
             self.logger.update_best_eval_results(self.logger.get_metric_value('val/psnr'))
             self.logger.update_metric_item('train/lr', self.optimizer.param_groups[0]['lr'])

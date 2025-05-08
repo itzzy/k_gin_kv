@@ -353,26 +353,28 @@ class KInterpolator(nn.Module):
         # 不同帧的K空间合并成一个了,作为全采指导
         # 计算参考图像
         img_keep = img.sum(dim=1, keepdim=True)  # 计算参考图像
-        # print(f"img_keep shape: {img_keep.shape}")  # 应该是 [32, 1, 192, 192]
+        # print(f"img_keep shape: {img_keep.shape}")  # 应该是 [32, 1, 192, 192] torch.Size([1, 1, 192, 192])
         # 计算权重
         weights = mask.sum(dim=1, keepdim=True)  # 计算权重
-        # print(f"weights shape: {weights.shape}")  # 应该是 [32, 1, 192]
+        # print(f"weights shape: {weights.shape}")  # 应该是 [32, 1, 192] torch.Size([1, 1, 192])
         # 进行除法运算  加了unsqueeze运行时成功的
         # img_0F_1 = img_keep / weights  # 计算参考图像
         img_0F_1 = img_keep / weights.unsqueeze(1)  # 确保 weights 的维度是 [32, 1, 192, 1]
-        # print(f"forward-img_0F-1 shape: {img_0F_1.shape}")  # 应该是 [32, 1, 192, 192]
+        # print(f"forward-img_0F-1 shape: {img_0F_1.shape}")  # 应该是 [32, 1, 192, 192]  torch.Size([1, 1, 192, 192])
 
         # print(f"forward-img_0F-1 type: {type(img_0F)}, shape: {img_0F.shape}")
         img_0F_2 = img_0F_1.repeat(1, img.shape[1], 1, 1)
-        # print(f"forward-img_0F-2 type: {type(img_0F_2)}, shape: {img_0F_2.shape}")
+        # print(f"forward-img_0F-2 type: {type(img_0F_2)}, shape: {img_0F_2.shape}") #type: <class 'torch.Tensor'>, shape: torch.Size([1, 18, 192, 192])
         #torch.mean(img, dim=1, keepdim=True).repeat(1, img.shape[1], 1, 1)
                 
         mask_0F = torch.ones(mask.shape[0], mask.shape[1], mask.shape[2])
         #mask_0F = torch.ones(mask.shape[0], 1, mask.shape[2])
+        # print(f"forward-mask_0F type: {type(mask_0F)}, shape: {mask_0F.shape}") # type: <class 'torch.Tensor'>, shape: torch.Size([1, 18, 192])
         
         
         img_orig = torch.view_as_real(img)       
         mask_orig = mask[..., None, None].expand_as(img_orig) #torch.Size([1, 18, 192, 192, 2])
+        # print(f"forward-mask_orig type: {type(mask_orig)}, shape: {mask_orig.shape}") #type: <class 'torch.Tensor'>, shape: torch.Size([1, 18, 192, 192, 2])
         
         img = torch.view_as_real(torch.einsum('bthw->btwh', img)).flatten(-2)
         img = torch.einsum('bhwt->bthw', img)
@@ -380,15 +382,19 @@ class KInterpolator(nn.Module):
         # img_0F = torch.einsum('bhwt->bthw', img_0F)
         img_0F_3 = torch.view_as_real(torch.einsum('bthw->btwh', img_0F_2)).flatten(-2)
         img_0F_4 = torch.einsum('bhwt->bthw', img_0F_3)
+        # print(f"forward-img_0F_4 type: {type(img_0F_4)}, shape: {img_0F_4.shape}") #forward-img_0F_4 type: <class 'torch.Tensor'>, shape: torch.Size([1, 384, 18, 192])
         b, h_2, t, w = img.shape
 
         mask = mask.flatten(1, -1)
         mask_0F = mask_0F.flatten(1, -1) 
+        # print(f"forward-mask type: {type(mask)}, shape: {mask.shape}") #type: <class 'torch.Tensor'>, shape: torch.Size([1, 3456])
+        # print(f"forward-mask_0F type: {type(mask_0F)}, shape: {mask_0F.shape}") # type: <class 'torch.Tensor'>, shape: torch.Size([1, 3456])
 
         # kv, _ = self.encoder(img_0F, mask_0F)
         kv, _ = self.encoder(img_0F_4, mask_0F)
         q, ids_restore = self.encoder(img, mask)
         pred, latent_decoder = self.decoder(kv, q, ids_restore, mask)
+        # print(f"forward-pred type: {type(pred)}, shape: {pred.shape}") #type: <class 'torch.Tensor'>, shape: torch.Size([1, 3456, 384])
 
         pred = pred.reshape((b, t, w, int(h_2/2), 2))
         pred = torch.einsum('btwhc->bthwc', pred)
@@ -416,7 +422,9 @@ class KInterpolator(nn.Module):
         if self.ref_repl_prior_denoiser: pred_t3[torch.where(mask_orig==1)] = img_orig[torch.where(mask_orig==1)]
 
         k_recon_complex = torch.view_as_complex(pred_t3)
+        # print(f"forward-k_recon_complex type: {type(k_recon_complex)}, shape: {k_recon_complex.shape}") #type: <class 'torch.Tensor'>, shape: torch.Size([1, 18, 192, 192])
         im_recon = ifft2c(k_recon_complex.to(torch.complex64))
+        # print(f"forward-im_recon type: {type(im_recon)}, shape: {im_recon.shape}") # type: <class 'torch.Tensor'>, shape: torch.Size([1, 18, 192, 192])
 
         return pred_list, im_recon
 

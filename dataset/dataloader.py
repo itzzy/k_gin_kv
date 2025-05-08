@@ -136,6 +136,20 @@ class CINE2DT_vista(torch.utils.data.Dataset):
         # self.mask = C['mask'][:]
         # vista的mask
         self.mask = C['mask'][:, :, 0].astype(np.int32)  # 显式取第三维的索引
+        
+        # with h5py.File(config.mask_root, 'r') as f:
+        #     mask = np.array(f['mask']).astype(np.int32)  # 读取并转换为 numpy 数组
+        #     print('CINE2DT_vista-mask-shape-1:',mask.shape) #(18, 192)
+        #     # 注意：MATLAB 和 Python 的维度顺序相反，可能需要转置
+        #     mask = np.transpose(mask, (2, 1, 0))  # 调整轴顺序，具体取决于数据存储方式
+        #     print('CINE2DT_vista-mask-shape-2:',mask.shape) #(18, 192)
+    
+        # # self.mask = C['mask'].astype(np.int32)  # 显式取第三维的索引
+        # # print('CINE2DT_vista-mask-shape-1:',self.mask.shape) #(18, 192)
+        # # self.mask = np.transpose(self.mask, (2, 1, 0))  # 调整轴顺序，具体取决于数据存储方式
+        # # print('CINE2DT_vista-mask-shape-2:',self.mask.shape) #(18, 192)
+        # self.mask = mask[:, :, 0].astype(np.int32)  # 显式取第三维的索引
+        print('CINE2DT_vista-mask-shape-3:',self.mask.shape) #(18, 192)
         # 对 self.mask 进行转置操作。 vista的mask不用转置[18,192,192]
         # self.mask = np.transpose(self.mask,[1,0])
 
@@ -157,7 +171,7 @@ class CINE2DT_vista(torch.utils.data.Dataset):
 
         # 调整 sampling_mask 的维度
         # 原始 sampling_mask 的形状是 (18, 192)
-       # 原始 sampling_mask 的形状是 (18, 192)
+        # 原始 sampling_mask 的形状是 (18, 192)
         # sampling_mask = np.expand_dims(sampling_mask, axis=1)  # 从 (18, 192) 调整为 (18, 1, 192)
         # sampling_mask = np.expand_dims(sampling_mask, axis=-1)  # 从 (18, 1, 192) 调整为 (18, 1, 192, 1)
         # sampling_mask = np.tile(sampling_mask, (1, 20, 1, 192))  # 复制到每个通道和空间维度，调整为 (18, 20, 192, 192)

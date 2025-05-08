@@ -65,7 +65,7 @@ class CriterionKGIN(CriterionBase, torch.nn.Module):
     def __init__(self, config):
         super(CriterionKGIN, self).__init__(config)
         self.only_maskout = config.only_maskout
-
+    #ls = self.eval_criterion([kspace_complex], ref_kspace, im_recon, ref_img, kspace_mask=sampling_mask, mode='test')
     def forward(self, k_pred, k_ref, im_pred, im_ref, kspace_mask, mode='train'):
         loss_dict = {}
         if mode == 'train': assert len(k_pred) == len(self.k_loss_list)
