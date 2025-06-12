@@ -16,6 +16,8 @@ import numpy as np
 import datetime
 
 #nohup python kgin_kv_train_r6_zzy.py --config config_kgin_kv_r6_zzy.yaml > log_kgin_kv_r6_0507.txt 2>&1 &
+#nohup python kgin_kv_train_r6_zzy.py --config config_kgin_kv_r6_zzy.yaml > log_kgin_kv_r6_0611.txt 2>&1 &
+
 # PyTorch建议在使用多线程时设置OMP_NUM_THREADS环境变量，以避免系统过载。
 os.environ['OMP_NUM_THREADS'] = '1'
 # 设置PYTORCH_CUDA_ALLOC_CONF环境变量，以减少CUDA内存碎片
@@ -218,6 +220,7 @@ class TrainerKInterpolator(TrainerAbstract):
             # np.save('out_1120.npy', out)
             # np.save('out_1130_3.npy', out)
             # np.save('out_kgin_kv_0328_r6_zzy.npy', out)
-            np.save('out_kgin_kv_0507_r6_zzy.npy', out)
+            # np.save('out_kgin_kv_0507_r6_zzy.npy', out)
+            np.save('out_kgin_kv_0611_r6_zzy.npy', out)
             self.logger.update_best_eval_results(self.logger.get_metric_value('val/psnr'))
             self.logger.update_metric_item('train/lr', self.optimizer.param_groups[0]['lr'])

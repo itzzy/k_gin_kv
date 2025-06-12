@@ -7,6 +7,8 @@ from datetime import datetime
 import math
 from utils import fix_dict_in_wandb_config
 
+wandb.init(mode="offline")  # 不连接服务器，日志保存在本地
+
 
 def get_grad_norm_(parameters, norm_type: float = 2.0) -> torch.Tensor:
     if isinstance(parameters, torch.Tensor):

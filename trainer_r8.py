@@ -228,6 +228,7 @@ class TrainerKInterpolator(TrainerAbstract):
             # np.save('out.npy', out)
             # np.save('out_1120.npy', out)
             # np.save('out_1130_3.npy', out)
-            np.save('out_kgin_kv_0424_r8.npy', out)
+            # np.save('out_kgin_kv_0424_r8.npy', out)
+            np.save('out_kgin_kv_r8_0612.npy', out)
             self.logger.update_best_eval_results(self.logger.get_metric_value('val/psnr'))
             self.logger.update_metric_item('train/lr', self.optimizer.param_groups[0]['lr'])

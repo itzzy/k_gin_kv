@@ -55,7 +55,8 @@ training:
   # num_workers: 1
   # restore_ckpt: '/nfs/zzy/code/k_gin_base/experiments/test_k_gin'
   # restore_ckpt: '/data0/zhiyong/code/github/itzzy_git/k_gin_base/experiments/test_kgin_kv_r6_zzy_0507'
-  restore_ckpt: '/opt/data/private/zhiyong/code/github/itzzy_git/k_gin_kv/experiments/test_kgin_kv_r6_zzy_0507'
+  # restore_ckpt: '/opt/data/private/zhiyong/code/github/itzzy_git/k_gin_kv/experiments/test_kgin_kv_r6_zzy_0507'
+  restore_ckpt: '/opt/data/private/zhiyong/code/github/itzzy_git/k_gin_kv/experiments/test_kgin_kv_r6_zzy_0611'
   # restore_ckpt: '/public/home/macong/zzy/data/code/k_gin_kv/experiments/test_kgin_kv_r8'
   restore_training: False
   # restore_training: True

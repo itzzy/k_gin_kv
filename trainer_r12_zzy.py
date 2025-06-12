@@ -15,7 +15,7 @@ from utils import multicoil2single
 import numpy as np
 import datetime
 
-
+#nohup python kgin_kv_train_r12_zzy.py --config config_kgin_kv_r12_zzy.yaml > log_kgin_kv_r12_0513_zzy.txt 2>&1 &
 # PyTorch建议在使用多线程时设置OMP_NUM_THREADS环境变量，以避免系统过载。
 os.environ['OMP_NUM_THREADS'] = '1'
 # 设置PYTORCH_CUDA_ALLOC_CONF环境变量，以减少CUDA内存碎片
@@ -26,8 +26,7 @@ os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'max_split_size_mb:256'
 # os.environ['CUDA_VISIBLE_DEVICES'] = '6'  # 指定使用 GPU 1 和 GPU 4
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'  # 指定使用 GPU 1 和 GPU 4
 
-## nohup python kgin_kv_train_r4_zzy.py --config config_kgin_kv_r4_zzy.yaml > log_kgin_kv_r4_0527.txt 2>&1 &
-# 设置环境变量 CUDA_VISIBLE_DEVICES  0-5(nvidia--os) 2-6 3-7
+# 设置环境变量 CUDA_VISIBLE_DEVICES  0-5(nvidia--os) 2-6 3-7 6--3
 # os.environ['CUDA_VISIBLE_DEVICES'] = '0,1'  # 指定使用 GPU 1 和 GPU 4
 # os.environ['CUDA_VISIBLE_DEVICES'] = '4,7'  # 指定使用 GPU 7 和 GPU 3
 # os.environ['CUDA_VISIBLE_DEVICES'] = '1,4'  # 指定使用 GPU 4 和 GPU 7
@@ -41,7 +40,7 @@ class TrainerAbstract:
         super().__init__()
         self.config = config.general
         self.debug = config.general.debug
-        if self.debug: config.general.exp_name = 'test_kgin_kv_r4_zzy'
+        if self.debug: config.general.exp_name = 'test_kgin_kv_r12_zzy'
         self.experiment_dir = os.path.join(config.general.exp_save_root, config.general.exp_name)
         pathlib.Path(self.experiment_dir).mkdir(parents=True, exist_ok=True)
 
@@ -51,6 +50,7 @@ class TrainerAbstract:
 
         # data
         train_ds = CINE2DT(config=config.data, mode='train')
+        # train_ds = CINE2DT(config=config.data, mode='val')
         test_ds = CINE2DT(config=config.data, mode='val')
         # 测试数据分位训练集:测试集 = 8:2 计算训练集和测试集的大小
         # total_size = len(test_ds)
@@ -167,6 +167,11 @@ class TrainerKInterpolator(TrainerAbstract):
             max_memory = torch.cuda.max_memory_allocated() / 1024 / 1024
 
             # 更新tqdm显示信息
+            # pbar.set_description(
+            #     f"Epoch: [{epoch}] [{i + 1}/{len(self.train_loader)}] eta: {str(eta)} "
+            #     f"lr: {current_lr:.6f} loss: {loss_reduced.item():.4f} ({running_loss / (i + 1):.4f}) "
+            #     f"time: {elapsed_time / (i + 1):.4f} data: 0.0002 max mem: {max_memory:.0f}"
+            # )
             # Log the detailed information
             if i % 50 ==0:
                 print(
@@ -201,23 +206,23 @@ class TrainerKInterpolator(TrainerAbstract):
                 out[i] = kspace_complex
 
                 ls = self.eval_criterion([kspace_complex], ref_kspace, im_recon, ref_img, kspace_mask=sampling_mask, mode='test')
-                #收集每个样本的PSNR值
+                # 收集每个样本的PSNR值
                 psnr_values.append(ls['psnr'].item())  # 修改：记录原始PSNR值
+                
                 self.logger.update_metric_item('val/k_recon_loss', ls['k_recon_loss'].item()/len(self.test_loader))
                 self.logger.update_metric_item('val/recon_loss', ls['photometric'].item()/len(self.test_loader))
                 self.logger.update_metric_item('val/psnr', ls['psnr'].item()/len(self.test_loader))
-            #计算统计量 均值和方差
+            # 计算统计量
             psnr_mean = np.mean(psnr_values)
             psnr_var = np.var(psnr_values)
             # 打印结果
-            print(f'\nkgin_kv_r4_zzy Validation PSNR - Mean: {psnr_mean:.4f} ± {np.sqrt(psnr_var):.4f} | Variance: {psnr_var:.4f}')
+            print(f'\nkgin_kv_r12_zzy:Validation PSNR - Mean: {psnr_mean:.4f} ± {np.sqrt(psnr_var):.4f} | Variance: {psnr_var:.4f}')
             
             print('...', out.shape, out.dtype)
             out = out.cpu().data.numpy()
             # np.save('out.npy', out)
             # np.save('out_1120.npy', out)
             # np.save('out_1130_3.npy', out)
-            # np.save('out_kgin_kv_0430_r4_zzy.npy', out)
-            np.save('out_kgin_kv_0527_r4_zzy.npy', out)
+            np.save('out_kgin_kv_0513_r12_zzy.npy', out)
             self.logger.update_best_eval_results(self.logger.get_metric_value('val/psnr'))
             self.logger.update_metric_item('train/lr', self.optimizer.param_groups[0]['lr'])

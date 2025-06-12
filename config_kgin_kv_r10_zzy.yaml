@@ -45,16 +45,16 @@ data:
   only_infer: *only_infer
 
 training:
-  # num_epochs: &epochs 300
-  num_epochs: &epochs 1
-  warmup_epoch: 0
-  # warmup_epoch: 30
-  batch_size: 4
+  num_epochs: &epochs 300
+  # num_epochs: &epochs 1
+  # warmup_epoch: 0
+  warmup_epoch: 30
+  batch_size: 5
   # num_workers: 4
-  num_workers: 5
+  num_workers: 6
   # num_workers: 1
   # restore_ckpt: '/nfs/zzy/code/k_gin_base/experiments/test_k_gin'
-  restore_ckpt: '/opt/data/private/zhiyong/code/github/itzzy_git/k_gin_kv/experiments/test_kgin_kv_r10_zzy'
+  restore_ckpt: '/opt/data/private/zhiyong/code/github/itzzy_git/k_gin_kv/experiments/test_kgin_kv_r10_zzy_0515'
   # restore_ckpt: '/data0/zhiyong/code/github/itzzy_git/k_gin_base/experiments/test_kgin_kv_r10_zzy'
   # restore_ckpt: '/public/home/macong/zzy/data/code/k_gin_kv/experiments/test_kgin_kv_r10'
   restore_training: False
